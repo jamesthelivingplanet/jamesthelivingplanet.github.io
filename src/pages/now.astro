@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { useTranslations } from '../i18n/ui';
+
+const t = useTranslations('en');
+
+const updated = new Date('2026-06-21').toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<BaseLayout title={`${t('page.now.title')} — Alberto Le Baron`}>
+  <section class="reveal r-3 now-page">
+    <h2 class="section-label">
+      <span class="glyph-arrow">▸</span>
+      <span>{t('now.label')}</span>
+      <span class="count">[01]</span>
+    </h2>
+    <p class="now-intro">{t('now.intro')}</p>
+    <dl class="now-list">
+      <dt>{t('now.reading.label')}</dt>
+      <dd>{t('now.reading.value')}</dd>
+    </dl>
+    <p class="now-updated">{t('now.updated')}: <time datetime="2026-06-21">{updated}</time></p>
+  </section>
+</BaseLayout>

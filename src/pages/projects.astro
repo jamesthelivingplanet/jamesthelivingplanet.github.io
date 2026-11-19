@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { useTranslations } from '../i18n/ui';
+
+const t = useTranslations('en');
+---
+
+<BaseLayout title={`${t('page.projects.title')} — Alberto Le Baron`}>
+  <section class="reveal r-3">
+    <h2 class="section-label">
+      <span class="glyph-arrow">▸</span>
+      <span>{t('projects.label')}</span>
+      <span class="count">[01]</span>
+    </h2>
+
+    <article class="project-card">
+      <header class="project-head">
+        <h3 class="project-name">floo</h3>
+        <span class="project-status">[alpha]</span>
+      </header>
+      <p class="project-tagline">Sticky port assignments for parallel coding-agent dev servers.</p>
+
+      <div class="project-body">
+        <p>
+          I run multiple Claude Code instances in parallel, each on its own dev server.
+          They'd each pick "next free port" independently, so ports drifted constantly:
+          the server that was on 3002 would restart on 3000, and my mental model, my
+          browser tabs, my .env files were all wrong.
+        </p>
+        <p>
+          floo addresses these issues by keying (repo, service) to a port in a local
+          SQLite registry, so the same service in the same repo always comes back on
+          the same number.
+        </p>
+        <p>
+          Pick Python or Node. Both CLIs share the same local registry.
+        </p>
+      </div>
+
+      <footer class="project-foot">
+        <span class="project-stack">Python · TypeScript · SQLite · CLI</span>
+        <a class="project-link" href="https://gitlab.com/ajlebaron/floo" target="_blank" rel="noopener">
+          → gitlab.com/ajlebaron/floo
+        </a>
+      </footer>
+    </article>
+  </section>
+</BaseLayout>

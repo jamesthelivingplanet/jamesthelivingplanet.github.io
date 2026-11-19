@@ -1,0 +1,153 @@
+---
+import Corners from '../components/Corners.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/ui';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const {
+  title = 'Alberto Le Baron',
+  description = t('meta.description'),
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=JetBrains+Mono:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <Corners />
+    <div class="page-wrap">
+      <SiteHeader />
+      <main class="page-main">
+        <slot />
+      </main>
+      <SiteFooter />
+    </div>
+    <script is:inline>
+      (() => {
+        const sequence = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+        let pos = 0;
+        try {
+          if (localStorage.getItem('matoran-unlocked') === '1') {
+            document.body.classList.add('matoran-unlocked');
+          }
+          if (localStorage.getItem('matoran-mode') === '1') {
+            document.body.classList.add('matoran-mode');
+          }
+        } catch (_) {}
+
+        function syncToggleState() {
+          const on = document.body.classList.contains('matoran-mode');
+          document.querySelectorAll('[data-matoran-toggle]').forEach((el) => {
+            el.setAttribute('aria-pressed', on ? 'true' : 'false');
+            el.classList.toggle('active', on);
+          });
+          // When MA is selected, suppress server-rendered active on EN/ES;
+          // when off, restore .active to whichever link has aria-current="true".
+          document.querySelectorAll('.lang-link:not([data-matoran-toggle])').forEach((el) => {
+            if (on) el.classList.remove('active');
+            else el.classList.toggle('active', el.getAttribute('aria-current') === 'true');
+          });
+        }
+        function setMatoran(on) {
+          document.body.classList.toggle('matoran-mode', on);
+          try { localStorage.setItem('matoran-mode', on ? '1' : '0'); } catch (_) {}
+          syncToggleState();
+        }
+        // Konami / swipe path: unlock the toggle AND toggle matoran.
+        function unlockAndToggle() {
+          document.body.classList.add('matoran-unlocked');
+          try { localStorage.setItem('matoran-unlocked', '1'); } catch (_) {}
+          setMatoran(!document.body.classList.contains('matoran-mode'));
+        }
+        document.addEventListener('DOMContentLoaded', syncToggleState);
+        document.addEventListener('click', (e) => {
+          if (!e.target || !e.target.closest) return;
+          const toggleEl = e.target.closest('[data-matoran-toggle]');
+          if (toggleEl) { e.preventDefault(); setMatoran(true); return; }
+          // Clicking EN/ES turns Matoran off before navigation.
+          const langEl = e.target.closest('.lang-link:not([data-matoran-toggle])');
+          if (langEl) {
+            try { localStorage.setItem('matoran-mode', '0'); } catch (_) {}
+            document.body.classList.remove('matoran-mode');
+          }
+        });
+        function feed(token) {
+          if (token === sequence[pos]) {
+            pos++;
+            if (pos === sequence.length) { pos = 0; unlockAndToggle(); }
+          } else {
+            pos = token === sequence[0] ? 1 : 0;
+          }
+        }
+
+        // Keyboard (desktop)
+        window.addEventListener('keydown', (e) => {
+          const tag = e.target && e.target.tagName;
+          if (tag === 'INPUT' || tag === 'TEXTAREA' || (e.target && e.target.isContentEditable)) return;
+          const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+          feed(key);
+        });
+
+        // Touch (mobile): four swipe directions + two taps stand in for B/A.
+        const TAP_MAX_DIST = 14;     // px — anything under this is a tap
+        const SWIPE_MIN_DIST = 32;   // px — dominant-axis threshold
+        const GESTURE_MAX_TIME = 800; // ms
+        let sx = 0, sy = 0, st = 0, tracking = false;
+
+        window.addEventListener('touchstart', (e) => {
+          if (!e.touches[0]) return;
+          sx = e.touches[0].clientX;
+          sy = e.touches[0].clientY;
+          st = Date.now();
+          tracking = true;
+        }, { passive: true });
+
+        window.addEventListener('touchend', (e) => {
+          if (!tracking) return;
+          tracking = false;
+          const t = e.changedTouches[0];
+          if (!t) return;
+          if (Date.now() - st > GESTURE_MAX_TIME) return;
+          const dx = t.clientX - sx;
+          const dy = t.clientY - sy;
+          const dist = Math.hypot(dx, dy);
+
+          if (dist < TAP_MAX_DIST) {
+            // Tap — only advances if we're at the B or A slot.
+            if (sequence[pos] === 'b') feed('b');
+            else if (sequence[pos] === 'a') feed('a');
+            else pos = 0;
+            return;
+          }
+          if (Math.abs(dx) > Math.abs(dy)) {
+            if (Math.abs(dx) < SWIPE_MIN_DIST) return;
+            feed(dx > 0 ? 'ArrowRight' : 'ArrowLeft');
+          } else {
+            if (Math.abs(dy) < SWIPE_MIN_DIST) return;
+            feed(dy > 0 ? 'ArrowDown' : 'ArrowUp');
+          }
+        }, { passive: true });
+      })();
+    </script>
+  </body>
+</html>

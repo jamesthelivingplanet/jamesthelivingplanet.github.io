@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { useTranslations } from '../i18n/ui';
+
+const t = useTranslations('en');
+---
+
+<BaseLayout title={`${t('page.links.title')} — Alberto Le Baron`}>
+  <section class="reveal r-3">
+    <h2 class="section-label">
+      <span class="glyph-arrow">▸</span>
+      <span>{t('links.label')}</span>
+      <span class="count">[01]</span>
+    </h2>
+
+    <ul class="links-list">
+      <li>
+        <a href="https://gitlab.com/ajlebaron" target="_blank" rel="noopener">
+          <span class="links-name">GitLab</span>
+          <span class="links-url">gitlab.com/ajlebaron</span>
+        </a>
+      </li>
+    </ul>
+  </section>
+</BaseLayout>

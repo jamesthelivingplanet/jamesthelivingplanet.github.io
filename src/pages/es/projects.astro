@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { useTranslations } from '../../i18n/ui';
+
+const t = useTranslations('es');
+---
+
+<BaseLayout title={`${t('page.projects.title')} — Alberto Le Baron`}>
+  <section class="reveal r-3">
+    <h2 class="section-label">
+      <span class="glyph-arrow">▸</span>
+      <span>{t('projects.label')}</span>
+      <span class="count">[01]</span>
+    </h2>
+
+    <article class="project-card">
+      <header class="project-head">
+        <h3 class="project-name">floo</h3>
+        <span class="project-status">[alpha]</span>
+      </header>
+      <p class="project-tagline">Puertos fijos para servidores de desarrollo de agentes de código en paralelo.</p>
+
+      <div class="project-body">
+        <p>
+          Trabajo con varias instancias de Claude Code en paralelo, cada una con su
+          propio servidor de desarrollo. Cada agente elegía el "siguiente puerto libre"
+          por su cuenta, así que los puertos cambiaban constantemente: el servidor que
+          estaba en 3002 reiniciaba en 3000, y mi modelo mental, mis pestañas del
+          navegador y mis archivos .env quedaban desactualizados.
+        </p>
+        <p>
+          floo resuelve esto asociando (repositorio, servicio) a un puerto en un
+          registro SQLite local, de modo que el mismo servicio en el mismo repositorio
+          siempre vuelve al mismo número.
+        </p>
+        <p>
+          Elige Python o Node. Las dos CLIs comparten el mismo registro local.
+        </p>
+      </div>
+
+      <footer class="project-foot">
+        <span class="project-stack">Python · TypeScript · SQLite · CLI</span>
+        <a class="project-link" href="https://gitlab.com/ajlebaron/floo" target="_blank" rel="noopener">
+          → gitlab.com/ajlebaron/floo
+        </a>
+      </footer>
+    </article>
+  </section>
+</BaseLayout>

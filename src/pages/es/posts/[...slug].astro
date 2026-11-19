@@ -1,0 +1,35 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { useTranslations } from '../../../i18n/ui';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft && data.lang === 'es');
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const t = useTranslations('es');
+
+function formatDate(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}·${m}·${d}`;
+}
+---
+
+<BaseLayout title={`${post.data.title} — Alberto Le Baron`} description={post.data.description}>
+  <article class="reveal r-2">
+    <span class="post-page-date">{formatDate(post.data.date)}</span>
+    <h1 class="post-heading">{post.data.title}</h1>
+    <div class="prose">
+      <Content />
+    </div>
+    <a class="back-link" href="/es/">{t('back')}</a>
+  </article>
+</BaseLayout>

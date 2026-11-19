@@ -1,0 +1,17 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostList from '../components/PostList.astro';
+import { useTranslations } from '../i18n/ui';
+
+const t = useTranslations('en');
+
+const posts = (
+  await getCollection('posts', ({ data }) => !data.draft && data.lang === 'en')
+).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<BaseLayout>
+  <p class="about reveal r-3">{t('home.intro')}</p>
+  <PostList posts={posts} />
+</BaseLayout>
