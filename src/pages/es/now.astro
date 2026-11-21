@@ -4,7 +4,7 @@ import { useTranslations } from '../../i18n/ui';
 
 const t = useTranslations('es');
 
-const updated = new Date('2026-11-19').toLocaleDateString('es-ES', {
+const updated = new Date('2026-11-20').toLocaleDateString('es-ES', {
   year: 'numeric',
   month: 'long',
   day: 'numeric',
@@ -23,6 +23,6 @@ const updated = new Date('2026-11-19').toLocaleDateString('es-ES', {
       <dt>{t('now.reading.label')}</dt>
       <dd>{t('now.reading.value')}</dd>
     </dl>
-    <p class="now-updated">{t('now.updated')}: <time datetime="2026-11-19">{updated}</time></p>
+    <p class="now-updated">{t('now.updated')}: <time datetime="2026-11-20">{updated}</time></p>
   </section>
 </BaseLayout>
